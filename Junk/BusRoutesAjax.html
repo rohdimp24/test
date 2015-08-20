@@ -1,0 +1,596 @@
+<!DOCTYPE html PUBLIC
+     "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+ <style type="text/css">
+      v\:* {
+        behavior:url(#default#VML);
+      }
+
+	  body {
+	margin:0;
+	padding:0;
+}
+
+    </style>
+     <style type="text/css">
+        html, body {width: 100%; height: 100%; font-family: arial;}  
+        body {margin:0;padding 0;overflow: hidden;}
+        #mapContainer {padding-bottom: 30px;}
+        #map, #mapContainer {width:450px; height: 400px;}
+        #top {position:absolute; top:0; left:0; width: 100%; height: 50px; line-height: 50px;}
+        #spinner { visibility: hidden; margin-left:3px;}
+        #poweredby, #searchbox {line-height: 50px;}
+        #searchbox {text-align: center;}
+        #poweredby { float: right; margin-right: 3px;}
+        #poweredby img { vertical-align: baseline;}
+		.displayResult{color:#bf0000 }
+        .marker {font-size: 11px;}
+        .marker .businessimage { float: left;}
+        .marker .ratingsimage {vertical-align:middle; margin-top:0px;}
+        .marker .businessinfo { margin-left: 110px;}
+    </style>
+ 
+	<link rel="stylesheet" type="text/css" href="Scripts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="Scripts/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="Scripts/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="Scripts/connection-min.js"></script>
+<script type="text/javascript" src="Scripts/animation-min.js"></script>
+<script type="text/javascript" src="Scripts/datasource-min.js"></script>
+<script type="text/javascript" src="Scripts/autocomplete/autocomplete-min.js"></script>
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA1c1sWAqiVfYVo2H2uZO3DRSWrvxHdeTKbGAggAmAoqEyMU0eFRSTrS7LnHnkyvA93YPmiuF_C-0r7Q" 
+        type="text/javascript"></script>
+    <script type="text/javascript" src="Scripts/yelpMap.js"> </script>
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#originAutoComplete {
+    width:25em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+
+#destinationAutoComplete {
+    width:25em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+</style>
+
+
+
+    <script type="text/javascript">
+    // <![CDATA[
+
+        // an XMLHttpRequest
+        var xhr = null;
+
+		function GetNormalizedDistance(distance)
+		{
+			var convertDistance=0;
+			if(distance < 1)
+			{	
+				convertDistance=distance*1000;				
+				return convertDistance.toFixed(0)+ " meters";
+			}
+			else
+			{
+				convertDistance=distance*1;
+				
+				return convertDistance.toFixed(2);
+			}
+
+
+		}
+
+		function ClearDisplayArea()
+		{
+			
+			document.getElementById("sourceStop").innerHTML = "";
+			document.getElementById("destinationStop").innerHTML = "";
+			document.getElementById("searchStatus").innerHTML = "";
+			document.getElementById("routeDetails").innerHTML = "";
+
+
+		}
+
+
+		/**
+		* function displays the stop names
+		**/
+        function DisplayStopNames()
+        {
+			// need to perform more check on the text box...only numerical data cannot be enetered
+
+			// first check that bothe the fields are filled up
+			if(window.document.myForm.txtSourceAddress.value=='')
+			{
+				alert("Please provide the source address");
+				
+			}
+			else if(window.document.myForm.txtDestinationAddress.value=='')
+			{
+				alert("Please provide the destination address");
+				
+			}
+			else if(window.document.myForm.txtSourceAddress.value==window.document.myForm.txtDestinationAddress.value)
+			{
+				alert("Please enter destination different from source");
+			}
+			else
+			{
+
+				// instantiate XMLHttpRequest object
+				try
+				{
+					xhr = new XMLHttpRequest();
+				}
+				catch (e)
+				{
+					xhr = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+
+				// handle old browsers
+				if (xhr == null)
+				{
+					alert("Ajax not supported by your browser!");
+					return;
+				}
+
+				// get symbol
+				var sourceAddress = document.getElementById("txtSourceAddress").value;
+				var destinationAddress=document.getElementById("txtDestinationAddress").value;
+
+				// construct URL
+				var url = "GetBusStops.php?source=" +sourceAddress+"&destination="+destinationAddress;
+				//alert(url);
+				// get quote
+				xhr.onreadystatechange =
+				function()
+				{
+					// only handle loaded requests
+					if (xhr.readyState == 4)
+					{
+						if (xhr.status == 200)
+						{
+							// insert quote into DOM
+						   var div = document.createElement("div");
+						   var text = document.createTextNode(xhr.responseText);
+						   div.appendChild(text);
+						   //document.getElementById("quotes").appendChild(div);
+							// alert(xhr.responseText);
+							var xml = xhr.responseXML;
+							var errorStatuses=xml.getElementsByTagName("ErrorCode");
+							//alert(errorStatuses);
+							var infoMessages=xml.getElementsByTagName("Info");
+
+							ClearDisplayArea();
+							ClearMap();
+
+							if(errorStatuses[0].firstChild.textContent=="AM" || errorStatuses[1].firstChild.textContent=="AM")
+							{
+								if(errorStatuses[0].firstChild.textContent=="AM")
+								{
+									document.getElementById("sourceStop").innerHTML = "<b>"+sourceAddress+": "+infoMessages[0].firstChild.textContent+"</b>";
+								}
+								if(errorStatuses[1].firstChild.textContent=="AM")
+								{
+									document.getElementById("destinationStop").innerHTML = "<b>"+destinationAddress+": "+infoMessages[1].firstChild.textContent+"</b>";
+								}
+
+									
+							}
+							else if(errorStatuses[0].firstChild.textContent=="MA" || errorStatuses[1].firstChild.textContent=="MA")
+							{
+								if(errorStatuses[0].firstChild.textContent=="MA")
+								{
+									document.getElementById("sourceStop").innerHTML = "<b>"+sourceAddress+": "+infoMessages[0].firstChild.textContent+"</b>";
+								}
+								if(errorStatuses[1].firstChild.textContent=="MA")
+								{
+									document.getElementById("destinationStop").innerHTML = "<b>"+destinationAddress+": "+infoMessages[1].firstChild.textContent+"</b>";
+								}
+
+									
+							}
+							else if(errorStatuses[0].firstChild.textContent=="KM" || errorStatuses[1].firstChild.textContent=="KM")
+							{
+								if(errorStatuses[0].firstChild.textContent=="KM")
+								{
+									document.getElementById("sourceStop").innerHTML = "<b>"+sourceAddress+": "+infoMessages[0].firstChild.textContent+"</b>";
+								}
+								if(errorStatuses[1].firstChild.textContent=="KM")
+								{
+									document.getElementById("destinationStop").innerHTML = "<b>"+destinationAddress+": "+infoMessages[1].firstChild.textContent+"</b>";
+								}
+								
+							}
+							
+							else
+							{
+								var busStops = xml.getElementsByTagName("Result");
+								var sourceStopName = busStops[0].firstChild.textContent;
+								var sourceStopLatitude=busStops[0].childNodes[1].textContent;
+								var sourceStopLongitude=busStops[0].childNodes[2].textContent;
+								var sourceStopOffset=busStops[0].childNodes[3].textContent;
+								//var sourceStopBuses=busStops[0].childNodes[4].textContent;
+								if(sourceStopOffset==0)
+									document.getElementById("sourceStop").innerHTML = "<b>Your Source Stop is: "+ sourceStopName+"</b>";
+								else
+									document.getElementById("sourceStop").innerHTML ="<b>Your Source Stop is: "+sourceStopName+" (The stop is "+ GetNormalizedDistance(sourceStopOffset)+"  from "+sourceAddress+")</b>";
+								
+								var destStopName = busStops[1].firstChild.textContent;
+								var destStopLatitude=busStops[1].childNodes[1].textContent;
+								var destStopLongitude=busStops[1].childNodes[2].textContent;
+								var destStopOffset=busStops[1].childNodes[3].textContent;
+								if(destStopOffset==0)
+									document.getElementById("destinationStop").innerHTML = "<b>Your Destination Stop is: "+ destStopName+"</b><br/><hr/>";
+								else
+									document.getElementById("destinationStop").innerHTML ="<b>Your Destination Stop is: "+destStopName+" (The stop is "+ GetNormalizedDistance(destStopOffset)+"  from "+destinationAddress+")</b><br/><hr/>";
+								
+								
+								//alert(xhr.responseText);
+								GetRouteInformation(sourceStopName,destStopName,sourceStopOffset,destStopOffset,xml);
+								//alert(ss);
+							}
+							
+						}
+						else
+							alert("Error with call!");
+					}
+				}
+				xhr.open("GET", url, true);
+				xhr.send(null);
+				}
+        }
+		
+
+		function GetRouteInformation(sourceStopName,destStopName,sourceStopOffset,destStopOffset,xml)
+		{
+			 // instantiate XMLHttpRequest object
+            try
+            {
+                xhr = new XMLHttpRequest();
+            }
+            catch (e)
+            {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            // handle old browsers
+            if (xhr == null)
+            {
+                alert("Ajax not supported by your browser!");
+                return;
+            }
+
+            // get symbol
+           
+
+            // construct URL
+            var url = "GetBusRouteDetails.php?sourceStopName=" + sourceStopName+"&destStopName="+destStopName+"&sourceOffset="+sourceStopOffset+"&destOffset="+destStopOffset;
+			//alert(url);
+            // get quote
+            xhr.onreadystatechange =
+            function()
+            {
+                // only handle loaded requests
+                if (xhr.readyState == 4)
+                {
+                    if (xhr.status == 200)
+                    {
+						//return xhr.responseText;
+						//alert(xhr.responseText);
+						var div = document.createElement("div");
+                        var text = document.createTextNode(xhr.responseText);
+                        div.appendChild(text);
+                        //document.getElementById("routeDetails").appendChild(div);
+						
+						var routeXml = xhr.responseXML;
+						var routeDetails = routeXml.getElementsByTagName("Route");
+						//alert(routeDetails.length);
+						var i=0;
+						var res='';
+						var flag=0;
+						var junctionDetails;
+						var directBusToPlot='';
+						// first check for the walking thing
+						
+						
+
+						for(i=0;i<routeDetails.length;i++)
+						{	
+							if(routeDetails[i].firstChild.textContent=="Y")
+							{
+								// direct route found
+								var busRoute=routeDetails[i].childNodes[2].textContent;
+								var routeNumber=i+1;
+								if(i==0)
+									directBusRouteToPlot=busRoute;
+								res=res+ "<b>Direct Bus #"+routeNumber+": "+busRoute+"</b><br/>";
+								document.getElementById("searchStatus").innerHTML = "<b>Direct Buses Found</b>";
+								flag=1;
+							}
+							else
+							{
+								flag=0;
+								// get the error code
+								var errorCode=routeDetails[i].childNodes[1].textContent;
+								if(errorCode==4)
+								{
+								// this will take care of the condition id even indirect route is not found
+									document.getElementById("searchStatus").innerHTML="<b>No Indirect route found</b>";
+									return;
+								}
+								if(errorCode==5)
+								{
+								// this is for the walking distance
+									document.getElementById("searchStatus").innerHTML="<b>The Distance is Walkable</b>";
+									var walkableArray=routeDetails[i].childNodes[2].textContent.split(":");
+									var walkSourceName=walkableArray[0];
+									var walkSourceLat=walkableArray[1];
+									var walkSourceLon=walkableArray[2];
+									var walkDestName=walkableArray[3];
+									var walkDestLat=walkableArray[4];
+									var walkDestLon=walkableArray[5];
+									var walkDistance=walkableArray[6];								
+
+									document.getElementById("searchStatus").innerHTML="<b>The Distance is Walkable ("+GetNormalizedDistance(walkableArray[6])+")</b>";
+
+									PlotWalkableMap(walkSourceName,walkSourceLat,walkSourceLon,walkDestName,walkDestLat,walkDestLon,walkDistance);
+									return;
+								}
+								else
+								{
+									// this is the indirect route
+
+									var busRouteArray = new Array();
+									busRouteArray=routeDetails[i].childNodes[2].textContent.split(":");
+									/*
+									var startStop=routeDetails[i].childNodes[1].textContent;
+									var startBuses=routeDetails[i].childNodes[2].textContent;
+									var firstJunction=routeDetails[i].childNodes[3].textContent;
+									var distJunction=routeDetails[i].childNodes[4].textContent;
+									var secJunction=routeDetails[i].childNodes[5].textContent;
+									var destBuses=routeDetails[i].childNodes[1].textContent;
+									var endStop=routeDetails[i].childNodes[1].textContent;
+									var distance=routeDetails[i].childNodes[1].textContent;
+									*/
+									var startStop=busRouteArray[0];
+									var startBuses=busRouteArray[1];
+									var firstJunction=busRouteArray[2];
+									var firstJunctionLat=busRouteArray[3];
+									var firstJunctionLon=busRouteArray[4];
+									var distJunction=busRouteArray[5];
+									var secJunction=busRouteArray[6];
+									var secJunctionLat=busRouteArray[7];
+									var secJunctionLon=busRouteArray[8];
+									var destBuses=busRouteArray[9];
+									var endStop=busRouteArray[10];
+									var distance=busRouteArray[11];
+									if(i==0)
+									{
+										junctionDetails=firstJunction+":"+firstJunctionLat+":"+firstJunctionLon+":"+secJunction+":"+secJunctionLat+":"+secJunctionLon;
+										startBusForRoute=startBuses.split(",");
+										destBusForRoute=destBuses.split(",");
+										if(errorCode==2)
+										{	
+											// this is the case when you have the direct bus but it doesnot reach to the destination
+											junctionRouteDetails=startBusForRoute[0]+":"+destBusForRoute[0]+":0";
+										}
+										else
+										{
+											junctionRouteDetails=startBusForRoute[0]+":"+destBusForRoute[0]+":1";
+										}
+			
+									}
+
+									//res=res+ startStop+":"+startBuses+":"+firstJunction+":"+distJunction+":"+secJunction+":"+destBuses+":"+endStop+":"+distance+"<br/>";
+									var firstLine='';
+									var secondLine='';
+									var thirdLine='';
+									var distanceLine='';
+									firstLine="<div class='displayResult' From "+"<i>"+startStop+"</i> (Starting Point) take "+startBuses+" and go to <i>"+firstJunction+"</i><br/></div>" ;
+									//if(distJunction==0)
+									if(errorCode==1)
+									{
+										secondLine="Now from "+"<i>"+firstJunction+"</i> take one of the"+destBuses+" buses to go to <i>"+endStop+"</i> (Your Destination)<br/>";
+										
+									}
+									else if(errorCode==2)
+									{
+										secondLine="You need to walk from "+"<i>"+firstJunction+"</i>" +" which is "+GetNormalizedDistance(distJunction)+"from "+ "<i>"+endStop+"(Your Destination)</i><br/>";
+									}
+									else
+									{
+										secondLine="You need to walk to  <i>"+secJunction+"</i> which is "+ GetNormalizedDistance(distJunction)+ " from "+ "<i>"+firstJunction+"</i><br/>";
+										thirdLine= "Now from <i>"+secJunction+"</i> take one of the"+destBuses+" buses to go to <i>"+endStop+ "</i>(Your Destination)<br/>";
+									}
+									distanceLine="The approximate route distance="+"<b>"+ GetNormalizedDistance(distance)+"KM</b><br/>";
+									res=res+firstLine+secondLine+thirdLine+distanceLine+"<hr/>";
+									document.getElementById("searchStatus").innerHTML = "<b>No Direct Buses Found</b>";
+								}
+								
+
+							}
+							 
+							document.getElementById("routeDetails").innerHTML=res;
+
+							// need to pass the route xml also so that the junctions can be plotted
+							if(flag==1)
+							{
+								//alert(directBusToPlot);
+								PlotMap(xml,0,directBusRouteToPlot);
+							}
+							else
+							{
+								
+								PlotMap(xml,junctionDetails,junctionRouteDetails);
+							}
+						}
+                    }
+                    else
+                        alert("Error with call!");
+                }
+            }
+            xhr.open("GET", url, true);
+            xhr.send(null);
+		}
+
+
+    // ]]>
+    </script>
+    <title></title>
+  </head>
+  <body class="yui-skin-sam">
+  <H1> Where do you want to go? </H1>
+    <form name="myForm" onsubmit="DisplayStopNames(); return false;">     
+   
+     <!-- <input type="submit" value="Get Quote" />-->
+	 <h3>Source Address </h3>
+   	<div id="originAutoComplete">
+		<input id="txtSourceAddress" name="txtSourceAddress" type="text">
+		<div id="suggestionSourceContainer"></div>
+	  </div>
+	<h3> Destination Address </h3>
+		<div id="destinationAutoComplete">
+		<input id="txtDestinationAddress"  name="txtDestinationAddress" type="text">
+		<div id="suggestionDestContainer"></div>
+	</div>
+			
+	<script type="text/javascript">
+ YAHOO.example.Origin = function() {
+    // Use an XHRDataSource
+    // the query is sent automatically to the following script as ?query=inputvalue
+	var oDS = new YAHOO.util.XHRDataSource("http://localhost/BMTC/queryRoadAddresses.php");
+    // Set the responseType
+    oDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+    // Define the schema of the delimited results. The results that are obtained from the php script swill be seperated by /n and fields sepereated by /t
+    oDS.responseSchema = {
+        recordDelim: "\n",
+        fieldDelim: ":"
+    };
+    // Enable caching
+    oDS.maxCacheEntries = 5;
+
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("txtSourceAddress", "suggestionSourceContainer", oDS);
+
+    // funcction that will format the result
+	oAC.formatResult = function(oResultData, sQuery, sResultMatch) {
+		return  oResultData[0];
+	}
+	// this function defines how the display will come once the item has been selected
+	 var myHandler = function(sType, aArgs) {
+        var myAC = aArgs[0]; // reference back to the AC instance
+      //  var elLI = aArgs[1]; // reference to the selected LI element
+        //var oData = aArgs[2]; // object literal of selected item's result data
+        
+        // update City with the selected item's City
+        //myCityField.value = oData[1];
+		// update the state with teh selected items state
+		//myStateField.value = oData[2];
+		
+		// this line will determine the display string in the input box
+        myAC.getInputEl().value = oData[0]; 
+
+
+    };
+
+	// add the subscription to the myHandler function once the data has been seleected
+	oAC.itemSelectEvent.subscribe(myHandler);
+
+
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+
+}();
+ YAHOO.example.Destination = function() {
+    // Use an XHRDataSource
+    // the query is sent automatically to the following script as ?query=inputvalue
+	var oDS = new YAHOO.util.XHRDataSource("http://localhost/BMTC/queryRoadAddresses.php");
+    // Set the responseType
+    oDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+    // Define the schema of the delimited results. The results that are obtained from the php script swill be seperated by /n and fields sepereated by /t
+    oDS.responseSchema = {
+        recordDelim: "\n",
+        fieldDelim: ":"
+    };
+    // Enable caching
+    oDS.maxCacheEntries = 5;
+
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("txtDestinationAddress", "suggestionDestContainer", oDS);
+
+    // funcction that will format the result
+	oAC.formatResult = function(oResultData, sQuery, sResultMatch) {
+		return  oResultData[0];
+	}
+	// this function defines how the display will come once the item has been selected
+	 var myHandler = function(sType, aArgs) {
+        var myAC = aArgs[0]; // reference back to the AC instance
+      //  var elLI = aArgs[1]; // reference to the selected LI element
+        //var oData = aArgs[2]; // object literal of selected item's result data
+        
+        // update City with the selected item's City
+        //myCityField.value = oData[1];
+		// update the state with teh selected items state
+		//myStateField.value = oData[2];
+		
+		// this line will determine the display string in the input box
+        myAC.getInputEl().value = oData[0]; 
+
+
+    };
+
+	// add the subscription to the myHandler function once the data has been seleected
+	oAC.itemSelectEvent.subscribe(myHandler);
+
+
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+
+}();
+
+</script>	
+ 
+ <input type="submit" value="Get Buses" />
+
+
+
+</form>
+<br /><br />
+<div id="quotes"></div>
+
+
+	
+	
+<table border="0" width="100%" cellpadding="4" cellspacing="0">
+<tr>
+ <td height="420">
+	<div id="mapContainer"><div id="map"></div></div>       
+</td>	
+<td height="420" width="100%">
+	 <span id="sourceStop"></span>
+	  <br />
+	<span id="destinationStop"></span>
+	<br />
+	<span id="searchStatus"></span>
+	<br />
+	<div id="routeDetails"></div>
+	
+</td>
+</tr>
+</table>
+
+
+
+
+
+
+  </body>
+</html>

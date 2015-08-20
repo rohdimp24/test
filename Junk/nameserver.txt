@@ -1,0 +1,11 @@
+ns1.bh-cp-10.speedhost.in
+ns2.bh-cp-10.speedhost.in
+
+
+Nameserver 1: ns13.hostgator.in (119.18.58.85)
+Nameserver 2: ns14.hostgator.in (119.19.60.71)
+
+
+ftpes://199.79.63.31
+bmtcrou1
+rohit19agarwal

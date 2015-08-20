@@ -1,0 +1,4 @@
+[10-Oct-2011 23:09:50] PHP Fatal error:  require_once() [<a href='function.require'>function.require</a>]: Failed opening required 'loginMySQL.php' (include_path='.:/usr/local/php52/pear') in /home/bmtcrout/public_html/test.php on line 2
+[10-Oct-2011 23:18:49] PHP Fatal error:  Cannot redeclare http_get() in /home/bmtcrout/public_html/LIB_http.php on line 121
+[10-Oct-2011 23:40:27] PHP Fatal error:  Cannot redeclare http_get() in /home/bmtcrout/public_html/LIB_http.php on line 121
+[10-Oct-2011 23:40:30] PHP Fatal error:  Cannot redeclare http_get() in /home/bmtcrout/public_html/LIB_http.php on line 121

@@ -1,0 +1,38 @@
+In the iphone app we can have another feature where the user can track himself ,. He can specify the bus he is getting into , and the destination he wants to go. We can display a list of stops that will come up during the journey. He can say start tracking me . Then the junctions will be highlighted as the user starts moving.
+
+Also at the same time this information can be transmitted from his phone so that we can use this information to start plotting on a  running map.
+
+We can display on the site whihc bus we are tracking and where it is. Optionally if the user can also specify the bus number plate then we can pipoint it also
+
+We should be able to handle large number of data.
+Also based on the movement of the bus we can predict the traffic condition of the place. If the user wants he can also send us some comments about the space in the bus etc
+
+
+Future extensions to the existing site. 
+You click on the map to gesiter your a and B points just like the google map
+Based on your points we can suggest the stops and the various routes . May be best two overlapping to each other.
+
+
+
+
+<Design for android>
+
+Have two layouts
+one for the direct
+	single line
+	text box to say that less number of buses were found
+
+one for indirect
+	line
+	line 
+	line
+	line
+
+one for walkable which is 
+	line
+
+
+In case of the direct route when we click on the bus we will show the map
+so in this case for each bus we will plot the map by passing that bus number
+
+In case of the indirect bus we need to see how we will select the bus number. This will be important since wehn we want to track the buses we need to check whose thing we have plotted

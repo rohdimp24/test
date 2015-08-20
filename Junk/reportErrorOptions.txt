@@ -1,0 +1,7 @@
+---------------Choose Your Problem Category-----------------------
+1. I know for sure that there is a direct bus but results gave me only indirect routes
+2. The route having two junctions has been shown above single junction route
+3. The map shows some disconnected lines
+4. You showed a very lengthy route. I know there is a shorter route
+5. I typed a place that is in Banaglore but the result says Address not mapped
+6. The address has not been mapped correctly

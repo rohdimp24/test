@@ -1,0 +1,4 @@
+I think even for the intersections we have to perform the calculations based on the latitude/longitude
+I have been doing the string match but I think the more effective thing should be by doing it using the lat/lon and vicitnity factor basically see if the lat/lon is similar to the the normalization 
+
+i think the logic of rejecting a particular stop should be how far from the detination is it giving a intersection. If the intersection is within 1 km then no point in changing the bus

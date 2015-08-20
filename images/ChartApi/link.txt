@@ -1,0 +1,1 @@
+http://chart.apis.google.com/chart?chst=d_map_spin&chld=.40|0|CC9900|8|b|J1

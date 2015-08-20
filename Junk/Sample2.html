@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>BTMC bus route search – bmtcroutes.in</title>
+<meta name="description" content="Bangalore Bus Route Search, BMTC Bus Route Search, BMTC Bus Route Search, BMTC, Bangalore Metropolitan Transport Corporation, Bangalore Routes, Bangalore Bus Routes, BMTC Bus Routes, BMTC Routes, Bus Route Information, Bus Route Search, Bangalore Bus Service, Bus Route Planner, Bus Route Numbers, Bangalore Transport,Bangalore public transport, BMTC Volvo, BMTC Routes, Bus Route Bangalore, Bus Planner Bangalore, Direct Bus, Indirect Bus" />
+<meta name="keywords" content="Bangalore Bus Route Search, BMTC Bus Route Search, BMTC Bus Route Search, BMTC, Bangalore Metropolitan Transport Corporation, Bangalore Routes, Bangalore Bus Routes, BMTC Bus Routes, BMTC Routes, Bus Route Information, Bus Route Search, Bangalore Bus Service, Bus Route Planner, Bus Route Numbers, Bangalore Transport,Bangalore public transport, BMTC Volvo, BMTC Routes, Bus Route Bangalore, Bus Planner Bangalore, Direct Bus, Indirect Bus" />
+
+<style type="text/css">
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="Scripts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="Scripts/autocomplete/assets/skins/sam/autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="Scripts/bmtc.css" />
+
+<script type="text/javascript" src="Scripts/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="Scripts/connection-min.js"></script>
+<script type="text/javascript" src="Scripts/animation-min.js"></script>
+<script type="text/javascript" src="Scripts/datasource-min.js"></script>
+<script type="text/javascript" src="Scripts/bmtcSearch.js"></script>
+<script type="text/javascript" src="Scripts/browserDetect.js"></script>
+<script type="text/javascript" src="Scripts/address.js"></script>
+<script>
+var browserName=BrowserDetect.browser;
+if(browserName=="Explorer")
+{
+	alert("Kindly use Firefox or Chrome...Internet Explorer is not supported for now.");
+
+}
+</script>
+<script type="text/javascript" src="Scripts/autocomplete/autocomplete-min.js"></script>
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA1c1sWAqiVfYVo2H2uZO3DRSdbZxIVjTSMKDiD-iCCeLYxJJn_BTfNn4DtNyckPujCTOcXysH3Glq9g"
+        type="text/javascript"></script>
+    <script type="text/javascript" src="Scripts/yelpMap.js"> </script>
+
+
+
+</head>
+<body>
+
+<div id="maincontainer">
+<br/>
+<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2Fpages%2Fbmtcroutesin%2F170127893076029&amp;send=false&amp;layout=standard&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=80&amp;appId=242491975776903" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:800px; height:30px;padding-bottom:-10px;" allowTransparency="true"></iframe>
+<div id="topsection-indexPage" class="yui-skin-sam"><div class="innertube">
+<H1> Where do you want to go in Bangalore? </H1><br/>
+
+<div id="SearchForm">
+
+    <form name="myForm" onsubmit="DisplayStopNames(); return false;">     
+   
+     <!-- <input type="submit" value="Get Quote" />-->
+	<table>
+	<tr>
+	<td>
+	<div class="textBox">
+	 <h3>Source Address </h3>
+	 </div>
+	 </td>
+	 <td>
+   	<div id="originAutoComplete">		
+		<input id="txtSourceAddress" name="txtSourceAddress" type="text">		
+		<div id="suggestionSourceContainer"></div>
+	  </div>
+	  </td>	  
+	  <td>
+	  <div class="textBox">
+	<h3> Destination Address </h3>
+	</div>
+	</td>
+	<td>
+	<div id="destinationAutoComplete">		
+		<input id="txtDestinationAddress" style="color:#FFFF" name="txtDestinationAddress" type="text">		
+		<div id="suggestionDestContainer"></div>
+	</div>
+	</td>
+	<td>
+	 
+	 <input class="button" type="submit" value="Get Buses" />
+	 
+	 </td>
+	</tr>
+	</table>
+
+
+
+<script type="text/javascript">
+
+
+
+ YAHOO.example.Origin = function() {
+    // Use an XHRDataSource
+    // the query is sent automatically to the following script as ?query=inputvalue
+	var oDS = new YAHOO.util.LocalDataSource(dataset);
+    // Set the responseType
+   // oDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+    // Define the schema of the delimited results. The results that are obtained from the php script swill be seperated by /n and fields sepereated by /t
+   /* oDS.responseSchema = {
+        recordDelim: "\n",
+        fieldDelim: ":"
+    };*/
+	oDS.responseSchema = {fields : ["state"]};
+    // Enable caching
+    oDS.maxCacheEntries = 5;
+
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("txtSourceAddress", "suggestionSourceContainer", oDS);
+
+    // funcction that will format the result
+	/*oAC.formatResult = function(oResultData, sQuery, sResultMatch) {
+		return  oResultData[0];
+	}
+	// this function defines how the display will come once the item has been selected
+	 var myHandler = function(sType, aArgs) {
+        var myAC = aArgs[0]; // reference back to the AC instance
+      //  var elLI = aArgs[1]; // reference to the selected LI element
+        //var oData = aArgs[2]; // object literal of selected item's result data
+        
+        // update City with the selected item's City
+        //myCityField.value = oData[1];
+		// update the state with teh selected items state
+		//myStateField.value = oData[2];
+		
+		// this line will determine the display string in the input box
+        myAC.getInputEl().value = oData[0]; 
+
+
+    };
+
+	// add the subscription to the myHandler function once the data has been seleected
+	oAC.itemSelectEvent.subscribe(myHandler);
+	*/
+
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+
+}();
+ YAHOO.example.Destination = function() {
+    // Use an XHRDataSource
+    // the query is sent automatically to the following script as ?query=inputvalue
+	var oDS = new YAHOO.util.XHRDataSource("queryRoadAddresses.php");
+    // Set the responseType
+    oDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+    // Define the schema of the delimited results. The results that are obtained from the php script swill be seperated by /n and fields sepereated by /t
+    oDS.responseSchema = {
+        recordDelim: "\n",
+        fieldDelim: ":"
+    };
+    // Enable caching
+    oDS.maxCacheEntries = 5;
+
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("txtDestinationAddress", "suggestionDestContainer", oDS);
+
+    // funcction that will format the result
+	oAC.formatResult = function(oResultData, sQuery, sResultMatch) {
+		return  oResultData[0];
+	}
+	// this function defines how the display will come once the item has been selected
+	 var myHandler = function(sType, aArgs) {
+        var myAC = aArgs[0]; // reference back to the AC instance
+      //  var elLI = aArgs[1]; // reference to the selected LI element
+        //var oData = aArgs[2]; // object literal of selected item's result data
+        
+        // update City with the selected item's City
+        //myCityField.value = oData[1];
+		// update the state with teh selected items state
+		//myStateField.value = oData[2];
+		
+		// this line will determine the display string in the input box
+        myAC.getInputEl().value = oData[0]; 
+
+
+    };
+
+	// add the subscription to the myHandler function once the data has been seleected
+	oAC.itemSelectEvent.subscribe(myHandler);
+
+
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+
+}();
+
+</script>
+
+
+
+
+</form>
+
+</div>
+</div></div>
+
+<div id="contentwrapper">
+<div id="contentcolumn">
+<div class="innertube">
+
+	<div id="mapContainer"><div id="map"></div></div>
+	
+</div>
+</div>
+</div>
+
+<div id="leftcolumn">
+	<div class="innertube">
+		<div id="quotes"></div>
+		<span id="sourceStop"></span>
+		 <br />
+		<span id="destinationStop"></span>
+		<br />
+
+		
+		<span id="searchStatus">
+
+Finally, Bangalore BMTC (Bangalore Metropolitan Transport Corporation) Bus route search is made Simpler, Swifter and Smarter.
+With the most unique Bus route search features, <a href="">bmtcroutes.in</a> is one of the best available web BMTC bus routes search engines. We are proud of our latest innovation in Bangalore bus routes search service. <a href="">bmtcroutes.in</a> provides you the bus route search information that is better than other sites. Currently <a href="">bmtcroutes.in</a> provides the bus routes for BMTC Volvo, Vajra and Big 10 buses
+Here are just few of the unique features of Bangalore BMTC bus route planner which you will not find anywhere! <br/>
+
+<ul>
+<li>
+Most intuitive UI. Just enter few characters in the address, we provide you with intelligent Bangalore addresses. Even if your desired address is not in the list, you are free to enter your own address. <a href="">bmtcroutes.in</a> will search it for you!
+</li>
+<li>
+No ugly options to choose before you click the bus search button. Just enter your desired Bangalore address and click "Get Buses".<a href="">bmtcroutes.in</a> will filter the best BTMC bus search results and show you the top BMTC bus routes.
+</li>
+<li>
+Our most innovative BMTC bus route search feature is Indirect BMTC bus routes. We use advance algorithms to present you the shortest possible indirect bus routes to your destination.<br/> 
+For ex: Try Bellandur Gate (ORR) to Forum Mall (Hosur Road). <br/>
+Any place in Bangalore you want to go, just type the addresses, <a href="">bmtcroutes.in</a> will search the direct and indirect BMTC bus for you.
+</li>
+</ul>
+So, what are you waiting for! Don’t be afraid of using Bangalore Public transport anymore. Enter the address and experience the truly unique BTMC bus route search – <a href="">bmtcroutes.in</a> 
+
+
+<!--	
+Welcome to <a href="">bmtcroutes.in</a>!!! <br/><br/>
+
+<a href="">bmtcroutes.in</a> provides you a platform to plan your bus routes in Bangalore City.<br/><br/>
+
+Just start typing the first few characters of your source and destination address in the boxes at the top, <a href="">bmtcroutes.in</a> will complete the addresses for you. Click on the Search Buses and bmtcroutes.in will find out the various options between your source and destination.
+Currently the buses are restricted to BMTC Volvos, Big Circle and Airport Volvos. <br/><br/>
+
+<a href="">bmtcroutes.in</a> tries to first find the direct buses( volvo only) between the source and destination, but
+in case the direct buses are not available, it will find the <i>indirect routes</i> ( which requires change in bus to reach the destination). This is the first site of its kind to predict the indirect routes with high degree of precision.<br/>
+For e.g. Try Bellandur Gate (ORR) and Forum Mall (Hosur Road) <br/><br/>
+
+In case you need to go to a place which is not getting listed while you type the address, enter the address anyways, <a href="">bmtcroutes.in</a> will try to find out the buses for this new address too!!! <br/><br/>
+
+A suggestive route for first route option is drawn on the map for better understanding of the route.
+
+-->
+		
+		</span>
+		<br />
+		<br/>
+		 <div id="progress" style="display: none;">
+			<img alt="Please Wait..." src="images/progress.gif" />
+        <br /><br />
+		</div>
+		<div id="routeDetails"></div>
+
+
+	</div>
+</div>
+
+<div id="footer">
+<a class="footerLink" href="">Home</a>     
+<a class="footerLink" href="ContactUs.php">Contact Us</a>
+<a class="footerLink" href="Help.php">Help</a>
+<br/>
+<span id="notice">* firefox or chrome recommended </span>
+</div>
+<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2Fpages%2Fbmtcroutesin%2F170127893076029&amp;send=false&amp;layout=standard&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=80&amp;appId=242491975776903" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
+</div>
+</body>
+</html>
+
